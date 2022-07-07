@@ -1,0 +1,36 @@
+provider "google" {
+  project = "itsi-labs"
+  region  = "asia-southeast2"
+  zone    = "asia-southeast2-a"
+}
+
+resource "google_compute_instance" "vm_instance" {
+  name         =
+  machine_type = "n2-custom-4-8192"
+
+  boot_disk {
+    initialize_params {
+      image = "projects/itsi-labs/global/images/gha-worker-img"
+      size  = 50
+    }
+  }
+
+  network_interface {
+    network    = "dev"
+    subnetwork = "dev-subnet-1"
+  }
+  
+  metadata = {
+    ssh-keys = <<EOF
+      gha:ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDBJk7Xld5Xv5gJp0sa0RrARj2TOGeI5pC0CgNv3x5Xl0PjELz5OAy1ZOMNZgxTBO28RvgT8Q3+SlgGvBP1CluPcMeRndqMeUVaC69/Xk5jd9xo3qal2NPL30PSJUQXgMwh+QPwV7X1veU71pf4g95AvOxlsVw2oRmvmjIDQNc4AdK5yRrTFptzOHvcDCd1+4JWwA7dNDwxM0e/ZEOLHeTN7CXrGWqJzhw2nRylj5jdDUk8T37EOdv5TTkOzvL3RWW/cokw7GZf0E3vL6yuJsNtq2Nwo1cOiehx5sI+lBACNkacc0EWFpt6Hu+1U+zTJC1BPzUzTSRV7E8YNZ8k+J4xxf1kLSs2op9Er0VDoE80OmjeoKQkN2U3kZ0NR2ObbPRvm1a9bmVqO3SPykBEETz0b6gu2yfRA9k9v7/a5UWRKurOPrRVQlW8AaKzupaZ6VKF+LhFgeBeuKtvqQ76F+97xveABBAK6oGgEtsG/TR8o3iSLudfLl6u3YtEZ38V4P0= gha
+    EOF
+  }
+  service_account {
+    email  = "390045704451-compute@developer.gserviceaccount.com"
+    scopes = ["https://www.googleapis.com/auth/devstorage.read_write"]
+  }
+  scheduling {
+      preemptible = true
+      automatic_restart = false
+  }
+}

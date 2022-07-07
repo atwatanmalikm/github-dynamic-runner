@@ -1,0 +1,10 @@
+[Unit]
+Description=monitor process for deletion
+
+[Service]
+User=gha
+WorkingDirectory=/home/gha
+ExecStart=/bin/bash -c 'bash worker-monitor.sh'
+
+[Install]
+WantedBy=multi-user.target
