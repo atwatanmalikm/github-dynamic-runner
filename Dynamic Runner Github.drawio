@@ -1,4 +1,4 @@
-<mxfile host="app.diagrams.net" modified="2022-07-07T03:18:22.508Z" agent="5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.0.0 Safari/537.36" etag="q24M94imSw7jLomhNTvx" version="20.0.4" type="github">
+<mxfile host="app.diagrams.net" modified="2022-07-07T03:21:33.305Z" agent="5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.0.0 Safari/537.36" etag="andMnein2YhHKarW8dbt" version="20.0.4" type="github">
   <diagram id="Dr4oT2GfeiCM5rTbQ34-" name="Page-1">
     <mxGraphModel dx="1422" dy="832" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" math="0" shadow="0">
       <root>
@@ -75,7 +75,7 @@
           </mxGeometry>
         </mxCell>
         <mxCell id="vPZo3bM_ZeZklGqJIQfb-36" value="runs-on" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;dashed=1;" vertex="1" parent="1">
-          <mxGeometry x="360" y="170" width="60" height="30" as="geometry" />
+          <mxGeometry x="350" y="170" width="60" height="30" as="geometry" />
         </mxCell>
         <mxCell id="vPZo3bM_ZeZklGqJIQfb-37" value="deploy instance" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;dashed=1;" vertex="1" parent="1">
           <mxGeometry x="800" y="90" width="120" height="30" as="geometry" />
@@ -86,8 +86,8 @@
         <mxCell id="vPZo3bM_ZeZklGqJIQfb-39" value="runs-on" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;dashed=1;" vertex="1" parent="1">
           <mxGeometry x="555" y="420" width="60" height="30" as="geometry" />
         </mxCell>
-        <mxCell id="vPZo3bM_ZeZklGqJIQfb-40" value="Destroy instance after job finished (success/fail)" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;dashed=1;" vertex="1" parent="1">
-          <mxGeometry x="650" y="370" width="160" height="30" as="geometry" />
+        <mxCell id="vPZo3bM_ZeZklGqJIQfb-40" value="destroy instance after workflow finished (success/fail)" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;dashed=1;" vertex="1" parent="1">
+          <mxGeometry x="640" y="380" width="180" height="30" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>
