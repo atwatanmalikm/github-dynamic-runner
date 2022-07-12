@@ -3,6 +3,25 @@
 CTRL_IP=$(hostname -i)
 CUR_DIR=$(pwd)
 
+###### Setup gha-controller
+DIR_ID=$(date +%N)
+
+mkdir -p gha-ctrl-${DIR_ID}
+tar -xf arms/actions-runner-linux-x64-2.293.0.tar.gz -C gha-ctrl-${DIR_ID}
+cd gha-ctrl-${DIR_ID}
+
+#curl --silent -X POST -H "Accept: application/vnd.github.v3+json" -H "Authorization: token ${AUTH_TOKEN} "  https://api.github.com/repos/$GITHUB_REPOSITORY/actions/runners/registration-token | jq -r .token > runner_token
+curl --silent -X POST -H "Accept: application/vnd.github+json" -H "Authorization: token ${AUTH_TOKEN}" https://api.github.com/orgs/${GITHUB_REPOSITORY_OWNER}/actions/runners/registration-token | jq -r .token > runner_token
+
+#./config.sh --url https://github.com/$GITHUB_REPOSITORY --token $(cat ${CUR_DIR}/gha-ctrl-${DIR_ID}/runner_token) --name gha-controller-${DIR_ID} --labels gha-controller --unattended --ephemeral
+./config.sh --url https://github.com/${GITHUB_REPOSITORY_OWNER} --token $(cat ${CUR_DIR}/gha-ctrl-${DIR_ID}/runner_token) --name gha-controller-${DIR_ID} --labels gha-controller --unattended --ephemeral
+sudo bash svc.sh install
+sudo bash svc.sh start
+
+cd ${CUR_DIR}
+
+###### Setup gha-worker
+
 mkdir -p ${CUR_DIR}/tf-${GITHUB_REF_NAME}-${GITHUB_SHA::7}
 
 ### ctrl-monitor@.service
@@ -24,9 +43,9 @@ sudo systemctl daemon-reload
 sudo systemctl start ctrl-monitor@tf-${GITHUB_REF_NAME}-${GITHUB_SHA::7}.service
 sudo systemctl status ctrl-monitor@tf-${GITHUB_REF_NAME}-${GITHUB_SHA::7}.service
 
-sed "s/name         =/name         = \"gha-worker-${GITHUB_REF_NAME}-${GITHUB_SHA::7}\"/g" tf_template/main.tf.template > ${CUR_DIR}/tf-${GITHUB_REF_NAME}-${GITHUB_SHA::7}/main.tf
+sed "s/name         =/name         = \"gha-worker-${GITHUB_REF_NAME}-${GITHUB_SHA::7}\"/g" arms/main.tf.template > ${CUR_DIR}/tf-${GITHUB_REF_NAME}-${GITHUB_SHA::7}/main.tf
 cd ${CUR_DIR}/tf-${GITHUB_REF_NAME}-${GITHUB_SHA::7} && terraform init && terraform apply -auto-approve
-cp ${CUR_DIR}/tf_template/* .
+cp ${CUR_DIR}/arms/* .
 
 sleep 30
 
@@ -55,6 +74,9 @@ EOF
 ### worker-monitor.sh
 cat << EOF > worker-monitor.sh
 #!/bin/bash
+
+sleep 30
+
 while :
 do	
 	sleep 90
@@ -72,6 +94,7 @@ do
 	done
 
 	sleep 30
+        proc=\$(pgrep Runner.Worker | wc -l)
 	
 	chk=\$(ssh -o "StrictHostKeyChecking=no" runner@${CTRL_IP} "ls -l ${CUR_DIR}/tf-\${BR}-\${ID}/DONE | wc -l")
 	if [ \$proc -eq 0 ] && [ \${chk} -eq 0 ]

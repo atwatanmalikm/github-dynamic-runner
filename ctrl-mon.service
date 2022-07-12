@@ -1,0 +1,10 @@
+[Unit]
+Description=monitor process for ctrl deletion
+
+[Service]
+User=runner
+WorkingDirectory=/mnt/runner
+ExecStart=/bin/bash -c 'bash ctrl-mon.sh'
+
+[Install]
+WantedBy=multi-user.target
