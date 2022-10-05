@@ -1,5 +1,5 @@
 provider "google" {
-  project = "itsi-labs"
+  project = "tools-hijra"
   region  = "asia-southeast2"
   zone    = "asia-southeast2-a"
 }
@@ -10,14 +10,14 @@ resource "google_compute_instance" "vm_instance" {
 
   boot_disk {
     initialize_params {
-      image = "projects/itsi-labs/global/images/gha-worker-img"
+      image = "projects/tools-hijra/global/images/gha-worker-img"
       size  = 50
     }
   }
 
   network_interface {
-    network    = "dev"
-    subnetwork = "dev-subnet-1"
+    network    = "hijrabank-tools-vpc"
+    subnetwork = "hijrabank-tools-asia-se2-instance-subnet-1"
   }
   
   metadata = {
@@ -26,8 +26,8 @@ resource "google_compute_instance" "vm_instance" {
     EOF
   }
   service_account {
-    email  = "390045704451-compute@developer.gserviceaccount.com"
-    scopes = ["https://www.googleapis.com/auth/devstorage.read_write"]
+    email  = "hijrabank-gh-runner@tools-hijra.iam.gserviceaccount.com"
+    scopes = ["compute-rw","storage-rw"]
   }
   scheduling {
       preemptible = true

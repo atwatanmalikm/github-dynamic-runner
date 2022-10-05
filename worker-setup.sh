@@ -22,6 +22,7 @@ cd ${CUR_DIR}
 
 ###### Setup gha-worker
 
+GITHUB_REF_NAME=$(echo ${GITHUB_REF_NAME} | cut -d/ -f1)
 mkdir -p ${CUR_DIR}/tf-${GITHUB_REF_NAME}-${GITHUB_SHA::7}
 
 ### ctrl-monitor@.service
@@ -88,6 +89,7 @@ do
 		proc2=\$(pgrep Runner.Worker | wc -l)
 		if [ \$proc2 -eq 0 ]
 		then
+                        bash worker-rm-exec.sh
 			ssh -o "StrictHostKeyChecking=no" runner@${CTRL_IP} "touch ${CUR_DIR}/tf-\${BR}-\${ID}/DONE"
 			break
 		fi

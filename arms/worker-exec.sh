@@ -1,4 +1,5 @@
 #!/bin/bash
+sudo timedatectl set-timezone Asia/Jakarta
 cp gha ~/.ssh/id_rsa && chmod 600 ~/.ssh/id_rsa
 chmod +x worker-monitor.sh
 sudo cp worker-monitor.service /etc/systemd/system
