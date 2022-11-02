@@ -4,6 +4,8 @@
 # SETUP GHA CTRL FUNCTION #
 ###########################
 
+GITHUB_REF_NAME=$(echo $GITHUB_REF_NAME | tr '[:upper:]' '[:lower:]')
+
 setup_ctrl () {
 
 # Install runner
@@ -16,8 +18,8 @@ curl --silent -X POST -H "Accept: application/vnd.github+json" -H "Authorization
 https://api.github.com/orgs/${GITHUB_REPOSITORY_OWNER}/actions/runners/registration-token | jq -r .token > runner_token
 
 # Determine Project ID
-STG=$(hostname | grep stg | wc -l)
-PROD=$(hostname | grep prod | wc -l)
+STG=$(hostname | grep tools-stg | wc -l)
+PROD=$(hostname | grep hijrabank-tools | wc -l)
 
 if [[ $STG -ge 1 ]]
 then
@@ -133,10 +135,15 @@ cp ${CUR_DIR}/arms/* .
 sleep 30
 
 # Get runner label list
-cat $GITHUB_WORKSPACE/.github/workflows/*.yml | grep runs-on | grep -v -E "gha-controller|windows|ubuntu|macos" | cut -d: -f2 | tr -d " " > label
+#cat $GITHUB_WORKSPACE/.github/workflows/*.yml | grep runs-on | grep -v -E "gha-controller|windows|ubuntu|macos" | cut -d: -f2 | tr -d " " > label
+WORKFLOW_FILE=$(grep -lr "name: $GITHUB_WORKFLOW" $GITHUB_WORKSPACE/.github/workflows | sed '1!D')
+cat $WORKFLOW_FILE | grep runs-on | grep -v -E "gha-controller|windows|ubuntu|macos" | cut -d: -f2 | tr -d " " > label
+
+# Remove control M (^M)
+sed -ie 's/\r//g' label
 
 # Add unique ID for runner name
-for i in $(cat label); do echo ${i}-$(date +%N); done > label_id
+for i in $(cat label); do echo "${i}-$(date +%N)"; done > label_id
 
 # Create worker setup script
 cat << EOF > worker.sh
@@ -154,7 +161,7 @@ curl --silent -X POST -H "Accept: application/vnd.github.v3+json" -H "Authorizat
 https://api.github.com/repos/$GITHUB_REPOSITORY/actions/runners/registration-token | jq -r .token > runner_token
 
 ./config.sh --url https://github.com/$GITHUB_REPOSITORY --token \$(cat ~/\${LABELID}/runner_token) \
---name \${LABELID}-${GITHUB_SHA::7} --labels \${LABEL} --unattended --ephemeral
+--name \${LABELID}-${GITHUB_SHA::7} --labels \${LABEL} --unattended
 
 sudo bash svc.sh install
 sudo bash svc.sh start
@@ -189,22 +196,22 @@ while :
 do	
 	sleep 90
 	BR=${GITHUB_REF_NAME}
-    ID=${GITHUB_SHA::7}
+  ID=${GITHUB_SHA::7}
 	proc=\$(pgrep Runner.Worker | wc -l)
 	while [[ \$proc -ge 1 ]]
 	do
-		proc2=\$(pgrep Runner.Worker | wc -l)
-        sleep 300
+    sleep 600
+    proc2=\$(pgrep Runner.Worker | wc -l)
 		if [ \$proc2 -eq 0 ]
 		then
-            bash worker-rm-exec.sh
+      bash worker-rm-exec.sh
 			ssh -o "StrictHostKeyChecking=no" runner@${CTRL_IP} "touch ${CUR_DIR}/tf-\${BR}-\${ID}/DONE"
 			break
 		fi
 	done
 
 	sleep 30
-        proc=\$(pgrep Runner.Worker | wc -l)
+  proc=\$(pgrep Runner.Worker | wc -l)
 	
 	chk=\$(ssh -o "StrictHostKeyChecking=no" runner@${CTRL_IP} "ls -l ${CUR_DIR}/tf-\${BR}-\${ID}/DONE | wc -l")
 	if [ \$proc -eq 0 ] && [ \${chk} -eq 0 ]
