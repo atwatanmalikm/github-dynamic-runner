@@ -4,6 +4,8 @@
 # SETUP GHA CTRL FUNCTION #
 ###########################
 
+GITHUB_REF_NAME=$(echo $GITHUB_REF_NAME | tr '[:upper:]' '[:lower:]' | tr '.' '-')
+
 setup_ctrl () {
 
 # Install runner
