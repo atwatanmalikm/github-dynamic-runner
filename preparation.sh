@@ -54,3 +54,6 @@ sudo systemctl enable --now worker-mon.service
 
 # Setup gha pubkey
 cat arms/gha.pub >>  ~/.ssh/authorized_keys
+
+# Download action runner
+gcloud storage cp gs://hijra-tools-stg-runner/actions-runner-linux.tar.gz arms/
